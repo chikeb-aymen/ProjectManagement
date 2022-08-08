@@ -1,0 +1,16 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: AUTHENTICATION-SERVICE
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+
+  datasource:
+    username: postgres
+    password: aymen
+    url: jdbc:postgresql://localhost:5432/pm_authentication

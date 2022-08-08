@@ -1,0 +1,22 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: USERPROJECT-SERVICE
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/userproject_db
+    username: postgres
+    password: aymen
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true

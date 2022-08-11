@@ -61,6 +61,10 @@ public class ProjectService {
         return taskRepository.findBySprintNameAndSprintProjectId(sp,projectId);
     }
 
+    public List<Task> getTaskByProjectId(Long id){
+        return taskRepository.findBySprintProjectId(id);
+    }
+
     public Task getTaskById(Long id){
 
         if(taskRepository.findById(id).isEmpty()){

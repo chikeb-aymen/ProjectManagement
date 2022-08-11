@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 @Data
 public class TaskMapper {
 
+    private Long id;
+
     private String name;
 
 

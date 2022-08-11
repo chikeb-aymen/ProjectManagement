@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/v1/project")
 @AllArgsConstructor
@@ -37,6 +37,14 @@ public class ProjectController {
     private UsersClient usersClient;
 
     private ProjectService projectService;
+
+
+    @GetMapping("/task/{taskId}")
+    public ResponseEntity<Object> getTaskById(@PathVariable("taskId") Long taskId){
+        Task task = projectService.getTaskById(taskId);
+
+        return new ResponseEntity<>(task,HttpStatus.OK);
+    }
 
 
     @GetMapping("/{projectId}/users")
@@ -107,6 +115,18 @@ public class ProjectController {
     }
 
 
+    @GetMapping("{projectId}/tasks")
+    public ResponseEntity<Object> getTasksByProjectId(@PathVariable("projectId") Long id){
+        if(projectService.findProjectById(id)==null){
+            throw new DataNotFound("Project not found");
+        }
+        if(projectService.getTaskByProjectId(id)==null){
+            throw new DataNotFound("No task found in this project");
+        }
+
+        return new ResponseEntity<>(projectService.getTaskByProjectId(id),HttpStatus.OK);
+    }
+
     @PostMapping("/task/updateStatus")
     @Transactional
     public ResponseEntity<Object> updateTaskStatus(@Valid @RequestBody TaskStatus taskStatus){
@@ -123,24 +143,44 @@ public class ProjectController {
 
     @PostMapping("/task/{taskId}/update")
     public ResponseEntity<Object> updateTask(@PathVariable("taskId") Long taskId,@RequestBody TaskMapper ts){
+
         Task task = projectService.getTaskById(taskId);
 
         if(task==null){
             throw new DataNotFound("Task not found");
         }
 
-        task.setName(ts.getName());
-        task.setDescription(ts.getDescription());
-        task.setLinkIssue(ts.getLinkIssue());
-        task.setDueDate(ts.getDueDate());
+        if(ts.getName()!=null)
+            task.setName(ts.getName());
+
+        if(ts.getDescription()!=null)
+            task.setDescription(ts.getDescription());
+
+        if(ts.getLinkIssue()!=null)
+            task.setLinkIssue(ts.getLinkIssue());
+
+        if(ts.getDueDate()!=null)
+            task.setDueDate(ts.getDueDate());
+
         task.setAssigneTo(ts.getAssigneTo());
-        task.setStatus(Status.valueOf(ts.getStatus()));
-        task.setPriority(Priority.valueOf(ts.getPriority()));
+
+        if(ts.getStatus()!=null)
+            task.setStatus(Status.valueOf(ts.getStatus()));
+        else
+            task.setStatus(Status.TO_DO);
+
+        System.out.println("Priority "+ts.getPriority());
+        if(ts.getPriority().isEmpty())
+            task.setPriority(null);
+        else
+            task.setPriority(Priority.valueOf(ts.getPriority()));
 
         projectService.addTask(task);
 
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
+
+
 
     //TODO assigne TO User
 }

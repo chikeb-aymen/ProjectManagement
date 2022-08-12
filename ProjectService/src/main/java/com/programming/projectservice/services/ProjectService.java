@@ -1,16 +1,21 @@
 package com.programming.projectservice.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.programming.projectservice.dto.KafkaReportDTO;
 import com.programming.projectservice.entities.Project;
 import com.programming.projectservice.entities.Sprint;
 import com.programming.projectservice.entities.Task;
 import com.programming.projectservice.exceptions.DataAlreadyExists;
 import com.programming.projectservice.exceptions.DataNotFound;
+import com.programming.projectservice.kafka.Producer;
 import com.programming.projectservice.repositories.ProjectRepository;
 import com.programming.projectservice.repositories.SprintRepository;
 import com.programming.projectservice.repositories.TaskRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +28,8 @@ public class ProjectService {
     private ProjectRepository projectRepository;
 
     private TaskRepository taskRepository;
+
+    private Producer producer;
 
 
     public Project findProjectById(Long id){
@@ -82,6 +89,15 @@ public class ProjectService {
     @Transactional
     public void addTask(Task t){
         taskRepository.save(t);
+    }
+
+
+
+
+
+    @GetMapping("/sendReportNotification")
+    public String send(@RequestBody KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
+        return producer.sendMessage(kafkaReportDTO);
     }
 
 

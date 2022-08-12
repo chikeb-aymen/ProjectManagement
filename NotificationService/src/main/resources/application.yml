@@ -1,0 +1,19 @@
+server:
+  port: 8084
+spring:
+  kafka:
+    consumer:
+      group-id: "default"
+  #docker container run --name notification_db --publish 27017:27017 -d -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password mongo
+  data:
+    mongodb:
+      authentication-database: admin
+      username: admin
+      password: password
+      database: notification_db
+      port: 27017
+      host: localhost
+      auto-index-creation: true
+
+topic:
+  name: report

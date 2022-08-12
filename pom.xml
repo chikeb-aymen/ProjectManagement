@@ -14,6 +14,7 @@
         <module>ProjectService</module>
         <module>UserProjectService</module>
         <module>EurekaService</module>
+        <module>NotificationService</module>
     </modules>
 
     <name>project-management-multi-module</name>

@@ -15,6 +15,8 @@ public class KafkaReportDTO {
 
     private String userId;
 
+    private String projectId;
+
     private String userEmail;
 
     private String userAvatar;

@@ -95,8 +95,9 @@ public class ProjectService {
 
 
 
-    @GetMapping("/sendReportNotification")
-    public String send(@RequestBody KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
+
+    //Send History to notification service
+    public String send(KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
         return producer.sendMessage(kafkaReportDTO);
     }
 

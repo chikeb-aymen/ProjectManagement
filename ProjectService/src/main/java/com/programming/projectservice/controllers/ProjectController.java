@@ -1,6 +1,8 @@
 package com.programming.projectservice.controllers;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.programming.projectservice.dto.KafkaReportDTO;
 import com.programming.projectservice.dto.UserProjectDTO;
 import com.programming.projectservice.dto.UsersDTO;
 import com.programming.projectservice.entities.Sprint;
@@ -180,6 +182,10 @@ public class ProjectController {
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
-    //TODO assigne TO User
 
+
+    @PostMapping("/sendHistoryNotification")
+    public ResponseEntity<Object> sendHistoryToNotificationService(@RequestBody KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
+        return new ResponseEntity<>(projectService.send(kafkaReportDTO),HttpStatus.OK);
+    }
 }

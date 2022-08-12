@@ -23,6 +23,8 @@ public class Report {
     //Like Aymen Chikeb change the status : Done -> IN PROGRESS
     private String description;
 
+    private String projectId;
+
     private String userId;
 
     private String userEmail;

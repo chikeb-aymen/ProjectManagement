@@ -32,7 +32,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/project")
 @AllArgsConstructor
-public class ProjectController {
+public class
+ProjectController {
 
     private UserProjectClient userProjectClient;
 

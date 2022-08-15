@@ -72,6 +72,10 @@ public class ProjectService {
         return taskRepository.findBySprintProjectId(id);
     }
 
+    public List<Task> getTaskByUserAssigned(Long userId){
+        return taskRepository.findByAssigneTo(userId);
+    }
+
     public Task getTaskById(Long id){
 
         if(taskRepository.findById(id).isEmpty()){
@@ -79,6 +83,9 @@ public class ProjectService {
         }
         return taskRepository.findById(id).get();
     }
+
+
+
 
     @Transactional
     public void addSprint(Sprint sp){

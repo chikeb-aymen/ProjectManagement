@@ -4,6 +4,8 @@ import com.programming.projectservice.entities.Sprint;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface SprintRepository extends JpaRepository<Sprint,Long> {
 
@@ -12,5 +14,7 @@ public interface SprintRepository extends JpaRepository<Sprint,Long> {
     Sprint findByName(String sp);
 
     Sprint findByNameAndProjectId(String nm,Long id);
+
+    List<Sprint> findByProjectId(Long projectId);
 
 }

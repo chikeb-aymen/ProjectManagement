@@ -13,7 +13,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {DataNotFoundException.class})
     public ResponseEntity<Object> handleDataNotFound(DataNotFoundException e){
 
-        CustomerApiException apiException = new CustomerApiException(e.getMessage(), HttpStatus.NOT_FOUND,"I can not show you Stack Trace 😅");
+        CustomerApiException apiException = new CustomerApiException(e.getMessage(), HttpStatus.NOT_FOUND,"I can't show you the Stack Trace 😅");
 
         return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
     }

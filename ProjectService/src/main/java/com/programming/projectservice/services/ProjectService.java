@@ -12,6 +12,7 @@ import com.programming.projectservice.repositories.ProjectRepository;
 import com.programming.projectservice.repositories.SprintRepository;
 import com.programming.projectservice.repositories.TaskRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,9 +41,13 @@ public class ProjectService {
     }
 
 
+    public Sprint getSprintById(Long sprintId){
+        return sprintRepository.findById(sprintId).get();
+    }
     public boolean sprintNameExists(String sprintName){
-        if(sprintRepository.existsByName(sprintName))
+        if(sprintRepository.existsByName(sprintName)){
             throw new DataAlreadyExists("Sprint with name -"+sprintName+"- already exists");
+        }
 
         return false;
     }
@@ -84,6 +89,15 @@ public class ProjectService {
         return taskRepository.findById(id).get();
     }
 
+
+
+    //get sprint by project
+    public List<Sprint> getProjectSprints(Long projectId){
+        if(sprintRepository.findByProjectId(projectId)==null)
+            throw new DataNotFound("No sprint found in this project, try to add one");
+
+        return sprintRepository.findByProjectId(projectId);
+    }
 
 
 

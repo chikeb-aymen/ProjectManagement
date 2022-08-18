@@ -31,7 +31,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             subErrors.add( new SubErrors(fieldName,message,objectName,rejectedValue));
         }
 
-        CustomerApiException apiException = new CustomerApiException("Argument Not Valid",HttpStatus.NOT_ACCEPTABLE,"I can not show you Stack Trace 😅");
+        CustomerApiException apiException = new CustomerApiException("Argument Not Valid",HttpStatus.NOT_ACCEPTABLE,"I can't show you the Stack Trace 😅");
 
         apiException.setSubErrorsList(subErrors);
 
@@ -40,14 +40,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({DataNotFound.class})
     public ResponseEntity<Object> handlerDataNotFound(DataNotFound e){
-        CustomerApiException apiException = new CustomerApiException(e.getMessage(), HttpStatus.NOT_FOUND,"I can not show you Stack Trace 😅");
+        CustomerApiException apiException = new CustomerApiException(e.getMessage(), HttpStatus.NOT_FOUND,"I can't show you the Stack Trace 😅");
 
         return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({DataAlreadyExists.class})
     public ResponseEntity<Object> handlerDataExists(DataAlreadyExists e){
-        CustomerApiException apiException = new CustomerApiException(e.getMessage(), HttpStatus.NOT_FOUND,"I can not show you Stack Trace 😅");
+        CustomerApiException apiException = new CustomerApiException(e.getMessage(), HttpStatus.FOUND,"I can't show you the Stack Trace 😅");
 
         return new ResponseEntity<>(apiException,HttpStatus.FOUND);
     }

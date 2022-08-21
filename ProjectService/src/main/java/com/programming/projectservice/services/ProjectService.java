@@ -12,11 +12,8 @@ import com.programming.projectservice.repositories.ProjectRepository;
 import com.programming.projectservice.repositories.SprintRepository;
 import com.programming.projectservice.repositories.TaskRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Objects;
@@ -65,6 +62,11 @@ public class ProjectService {
     }
 
 
+    public Sprint getSprintByNameContainAndProjectId(String sp,Long projectId){
+        return sprintRepository.findSprintByNameContainsAndProjectId(sp,projectId);
+    }
+
+
     public Sprint getSprintByNameAndProjectId(String sp,Long projectId){
         return sprintRepository.findByNameAndProjectId(sp,projectId);
     }
@@ -90,8 +92,15 @@ public class ProjectService {
     }
 
 
+    //get sprint by sprintID and projectID
+    public Sprint getSprintByIdAndProjectId(Long sprintId,Long projectId){
+        if(sprintRepository.findSprintByIdAndProjectId(sprintId,projectId)==null)
+            throw new DataNotFound("Sprint not exists in this project");
 
-    //get sprint by project
+        return sprintRepository.findSprintByIdAndProjectId(sprintId,projectId);
+    }
+
+    //get all sprint in project
     public List<Sprint> getProjectSprints(Long projectId){
         if(sprintRepository.findByProjectId(projectId)==null)
             throw new DataNotFound("No sprint found in this project, try to add one");
@@ -100,10 +109,14 @@ public class ProjectService {
     }
 
 
-
     @Transactional
     public void addSprint(Sprint sp){
         sprintRepository.save(sp);
+    }
+
+
+    public void deleteSprint(Long sprintId){
+        sprintRepository.deleteById(sprintId);
     }
 
 

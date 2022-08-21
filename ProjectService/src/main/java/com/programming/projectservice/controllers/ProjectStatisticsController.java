@@ -13,10 +13,7 @@ import com.programming.projectservice.services.ProjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.util.ArrayList;
@@ -24,16 +21,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/v1/project/{projectId}/statistics")
 @AllArgsConstructor
-public class ProjectStaticsController {
+public class ProjectStatisticsController {
 
     private UserProjectClient userProjectClient;
 
     private ProjectService projectService;
 
     private UsersClient usersClient;
+
+    //get count of task[Done, Updated, Created, Due] in first 4 col in summary dashboard
+    @GetMapping("/taskStatus")
+    public ResponseEntity<Object> getCountTasks(@PathVariable("projectId") Long projectId){
+        //TODO getTaskByProjectId without backlog task
+        if(projectService.getTaskByProjectId(projectId)==null)
+            throw new DataNotFound("No tasks found in this project");
+
+        //[Done, Updated, Created, Due]
+
+        int[] statusCount = new int[]{0,0,0,0};
+        List<Task> taskList = projectService.getTaskByProjectId(projectId);
+        taskList.forEach(task ->{
+            //task created
+            statusCount[2] += 1;
+
+            if(Status.DONE.equals(task.getStatus())){
+                statusCount[0] += 1;
+            }
+            else if(Status.IN_PROGRESS.equals(task.getStatus())){
+                statusCount[1] += 1;
+            }
+
+        });
+
+        return new ResponseEntity<>(statusCount, HttpStatus.OK);
+    }
+
 
     //Get status percentage
     @GetMapping("/status/percentage")
@@ -73,8 +99,10 @@ public class ProjectStaticsController {
     //Get priority percentage
     @GetMapping("/priority/percentage")
     public ResponseEntity<Object> getPriorityPercentage(@PathVariable("projectId") Long projectId){
+
         //TODO getTaskByProjectId without backlog task
-        if(projectService.getTaskByProjectId(projectId)==null)
+
+        if(projectService.getTaskByProjectId(projectId)==null)  
             throw new DataNotFound("No tasks found in this project");
 
         //Lowest, Low, Medium, High, Highest

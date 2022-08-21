@@ -23,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -68,6 +71,14 @@ ProjectController {
 
 
 
+    //(backlog) -> Get tasks that are not in sprints (sprint backlog)
+    @GetMapping("/{projectId}/backlog")
+    public ResponseEntity<Object> getBacklogTask(@PathVariable("projectId") Long projectId){
+
+       return new ResponseEntity<>( projectService.getSprintByNameContainAndProjectId("Backlog",projectId),HttpStatus.OK);
+    }
+
+
     @GetMapping("/{projectId}/sprint/{sprintName}/tasks")
     public ResponseEntity<Object> getTaskByProjectSprint(@PathVariable("projectId") Long id,@PathVariable("sprintName") String name){
         if(projectService.checkSprintProject(id,name)){
@@ -105,8 +116,12 @@ ProjectController {
     //Get Project Sprint and Task -> for backlog page
     @GetMapping("/{projectId}/sprints_tasks")
     public ResponseEntity<Object> getProjectSprintAndTask(@PathVariable("projectId") Long projectId){
+        //get Sprint without backlog
         List<Sprint> sprints = projectService.getProjectSprints(projectId);
+        sprints.remove(projectService.getSprintByNameAndProjectId("Backlog",projectId));
+
         List<SprintTask> sprintTasks = new ArrayList<>();
+
         sprints.forEach(sp->{
             SprintTask sprintTask = new SprintTask();
             sprintTask.setSprintId(sp.getId());
@@ -124,21 +139,35 @@ ProjectController {
     }
 
 
-    //Get Sprint by project also get tasks :)
+
+    //Get Sprint by project also get tasks :) without backlog sprint
     @GetMapping("/{projectId}/sprints")
     public ResponseEntity<Object> getProjectSprint(@PathVariable("projectId") Long projectId){
-        return new ResponseEntity<>(projectService.getProjectSprints(projectId),HttpStatus.OK);
+
+        List<Sprint> sprints = projectService.getProjectSprints(projectId);
+        sprints.remove(projectService.getSprintByNameAndProjectId("Backlog",projectId));
+
+        return new ResponseEntity<>(sprints,HttpStatus.OK);
     }
 
 
     @PostMapping("/{projectId}/sprint/{sprintId}/task/{taskId}")
     @Transactional
     public ResponseEntity<Object> changeTaskSprint(@PathVariable("projectId") Long projectId,@PathVariable("sprintId") Long sprintId,@PathVariable("taskId") Long taskId){
+
+        //if sprint==backlog -> assigneTo null, priority null & status null
         Task task = projectService.getTaskById(taskId);
         if(Objects.equals(task.getSprint().getId(), sprintId))
             throw new DataAlreadyExists("This task is in this sprint");
 
+
         Sprint newSp = projectService.getSprintById(sprintId);
+        if(newSp.getName().equals("Backlog")){
+            task.setStatus(null);
+            task.setPriority(null);
+            task.setAssigneTo(null);
+        }
+
         task.setSprint(newSp);
         projectService.addTask(task);
 
@@ -148,17 +177,73 @@ ProjectController {
 
 
 
+    @Transactional
+    @PostMapping("/{projectId}/sprint/{sprintId}/delete")
+    public ResponseEntity<Object> deleteSprint(@PathVariable("projectId") Long projectId,@PathVariable("sprintId") Long sprintId){
+        Sprint sprint = projectService.getSprintById(sprintId);
+
+        System.out.println(sprint.getName());
+
+
+
+        Sprint backlogSprint = projectService.getSprintByNameAndProjectId("Backlog",projectId);
+
+        System.out.println(backlogSprint.getName());
+
+        sprint.getTasks().forEach(t->{
+            t.setSprint(backlogSprint);
+            t.setStatus(null);
+            t.setPriority(null);
+            t.setAssigneTo(null);
+            backlogSprint.getTasks().add(t);
+        });
+
+        projectService.addSprint(backlogSprint);
+
+
+        projectService.deleteSprint(sprintId);
+
+        return new ResponseEntity<>("Sprint has been deleted successfully",HttpStatus.OK);
+    }
+
 
     @Transactional
-    @PostMapping("/sprint")
-    public ResponseEntity<Object> addSprint(@RequestBody SprintMapper sprintMapper){
+    @PostMapping("/{projectId}/sprint/{sprintId}/update")
+    public ResponseEntity<Object> updateSprint(@PathVariable("projectId") Long projectId,@PathVariable("sprintId") Long sprintId,@Valid @RequestBody SprintMapper sprintMapper){
+
+        System.out.println(sprintMapper);
+        Sprint sprint = projectService.getSprintByIdAndProjectId(sprintId,projectId);
+
+        LocalDateTime startDate = LocalDateTime.ofInstant(sprintMapper.getStartDate().toInstant(), ZoneId.systemDefault());
+
+        LocalDateTime endDate = LocalDateTime.ofInstant(sprintMapper.getEndDate().toInstant(), ZoneId.systemDefault());
+
+        sprint.setName(sprintMapper.getName());
+        sprint.setStartDate(startDate);
+        sprint.setEndDate(endDate);
+
+        projectService.addSprint(sprint);
+
+        return new ResponseEntity<>(sprint,HttpStatus.OK);
+    }
+
+
+
+    @Transactional
+    @PostMapping("/{projectId}/sprint/add")
+    public ResponseEntity<Object> addSprint(@PathVariable("projectId") Long projectId,@Valid @RequestBody SprintMapper sprintMapper){
+
+        LocalDateTime startDate = LocalDateTime.ofInstant(sprintMapper.getStartDate().toInstant(), ZoneId.systemDefault());
+        LocalDateTime endDate = LocalDateTime.ofInstant(sprintMapper.getEndDate().toInstant(), ZoneId.systemDefault());
+
+
         Sprint sprint = new Sprint();
 
         if(!projectService.sprintNameExists(sprintMapper.getName())){
             sprint.setName(sprintMapper.getName());
-            sprint.setStartDate(sprintMapper.getStartDate());
-            sprint.setEndDate(sprintMapper.getEndDate());
-            sprint.setProject(projectService.findProjectById(sprintMapper.getProjectId()));
+            sprint.setStartDate(startDate);
+            sprint.setEndDate(endDate);
+            sprint.setProject(projectService.findProjectById(projectId));
             projectService.addSprint(sprint);
         }
 
@@ -169,16 +254,24 @@ ProjectController {
 
 
     //Add task to sprint
-    @PostMapping("/task")
-    public ResponseEntity<Object> addTask(@Valid @RequestBody TaskNameMapper taskMapper){
+    @PostMapping("/{projectId}/task/add")
+    public ResponseEntity<Object> addTask(@PathVariable("projectId") Long projectId,@Valid @RequestBody TaskNameMapper taskMapper){
+
+        Sprint sp = projectService.getSprintById(taskMapper.getSprintId());
+        if(sp==null)
+            throw new DataNotFound("Sprint not found");
 
         Task task = new Task(taskMapper.getName());
 
-        if(projectService.checkSprintProject(taskMapper.getProjectId(),taskMapper.getSprintName())){
+        if(projectService.checkSprintProject(projectId,sp.getName())){
 
-            task.setSprint(projectService.getSprintByNameAndProjectId(taskMapper.getSprintName(),taskMapper.getProjectId()));
+            task.setSprint(sp);
+
+            task.setStatus(null);
 
             projectService.addTask(task);
+
+
 
         }
 
@@ -246,4 +339,6 @@ ProjectController {
     public ResponseEntity<Object> sendHistoryToNotificationService(@RequestBody KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
         return new ResponseEntity<>(projectService.send(kafkaReportDTO),HttpStatus.OK);
     }
+
+
 }

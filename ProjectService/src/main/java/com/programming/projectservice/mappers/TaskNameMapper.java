@@ -11,10 +11,7 @@ public class TaskNameMapper {
     @NotNull(message = "Name cannot be null")
     private String name;
 
-    @NotNull(message = "Sprint cannot be null")
-    private String sprintName;
-
-    @NotNull(message = "Project cannot be null")
-    private Long projectId;
+    @NotNull(message = "SprintId cannot be null")
+    private Long sprintId;
 
 }

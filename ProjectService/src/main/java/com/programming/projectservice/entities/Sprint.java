@@ -29,6 +29,13 @@ public class Sprint {
     private LocalDateTime endDate;
 
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean isStarted;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean isComplete;
+
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
     @JsonIgnore
@@ -38,6 +45,8 @@ public class Sprint {
     @OneToMany(mappedBy = "sprint")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Task> tasks;
+
+
 
 
 

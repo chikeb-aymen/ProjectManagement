@@ -27,7 +27,7 @@ public class ProjectService {
 
     private TaskRepository taskRepository;
 
-    private Producer producer;
+    //private Producer producer;
 
 
     public Project findProjectById(Long id){
@@ -41,6 +41,7 @@ public class ProjectService {
     public Sprint getSprintById(Long sprintId){
         return sprintRepository.findById(sprintId).get();
     }
+
     public boolean sprintNameExists(String sprintName){
         if(sprintRepository.existsByName(sprintName)){
             throw new DataAlreadyExists("Sprint with name -"+sprintName+"- already exists");
@@ -92,6 +93,15 @@ public class ProjectService {
     }
 
 
+    public Sprint getSprintStartedInProject(Long projectId){
+        return sprintRepository.findByIsStartedTrueAndProjectId(projectId);
+    }
+
+    //check if project has sprint started
+    public boolean hasSprintStarted(Long projectId){
+        return sprintRepository.existsByIsStartedTrueAndProjectId(projectId);
+    }
+
     //get sprint by sprintID and projectID
     public Sprint getSprintByIdAndProjectId(Long sprintId,Long projectId){
         if(sprintRepository.findSprintByIdAndProjectId(sprintId,projectId)==null)
@@ -120,6 +130,11 @@ public class ProjectService {
     }
 
 
+
+
+
+
+
     @Transactional
     public void addTask(Task t){
         taskRepository.save(t);
@@ -131,9 +146,9 @@ public class ProjectService {
 
 
     //Send History to notification service
-    public String send(KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
+    /*public String send(KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
         return producer.sendMessage(kafkaReportDTO);
-    }
+    }*/
 
 
 }

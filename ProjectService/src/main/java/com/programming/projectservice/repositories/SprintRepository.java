@@ -24,4 +24,8 @@ public interface SprintRepository extends JpaRepository<Sprint,Long> {
 
     Sprint findSprintByIdAndProjectId(Long sprintId,Long prId);
 
+    boolean existsByIsStartedTrueAndProjectId(Long projectId);
+
+    Sprint findByIsStartedTrueAndProjectId(Long projectId);
+
 }

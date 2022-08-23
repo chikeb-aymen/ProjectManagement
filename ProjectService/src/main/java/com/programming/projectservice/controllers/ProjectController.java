@@ -16,6 +16,7 @@ import com.programming.projectservice.feign.UserProjectClient;
 import com.programming.projectservice.feign.UsersClient;
 import com.programming.projectservice.mappers.*;
 import com.programming.projectservice.services.ProjectService;
+import feign.ResponseMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -34,8 +34,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/api/v1/project")
 @AllArgsConstructor
-public class
-ProjectController {
+public class ProjectController {
 
     private UserProjectClient userProjectClient;
 
@@ -96,7 +95,8 @@ ProjectController {
 
 
 
-    @GetMapping("{projectId}/tasks")
+    //Old version of project
+    @GetMapping("/{projectId}/tasks")
     public ResponseEntity<Object> getTasksByProjectId(@PathVariable("projectId") Long id){
         if(projectService.findProjectById(id)==null){
             throw new DataNotFound("Project not found");
@@ -109,9 +109,78 @@ ProjectController {
     }
 
 
+    @GetMapping("/{projectId}/tasks/sprint_started")
+    public ResponseEntity<Object> getTasksBySprintStartedInProjectId(@PathVariable("projectId") Long id){
+        if(projectService.findProjectById(id)==null){
+            throw new DataNotFound("Project not found");
+        }
+        if(projectService.getTaskByProjectId(id)==null){
+            throw new DataNotFound("No task found in this project");
+        }
+
+        if(projectService.getSprintStartedInProject(id)==null)
+            throw new DataNotFound("Task don't found yet");
+
+        Sprint sp = projectService.getSprintStartedInProject(id);
+
+        return new ResponseEntity<>(sp.getTasks(),HttpStatus.OK);
+    }
 
 
-    
+    //Project Has Sprint Started
+    @GetMapping("/{projectId}/hasSprintStarted")
+    public boolean projectHasSprintStarted(@PathVariable("projectId") Long projectId){
+        return projectService.hasSprintStarted(projectId);
+    }
+
+    //Started Sprint
+    @PostMapping("/{projectId}/sprint/{sprintId}/start")
+    public ResponseEntity<Object> startSprint(@PathVariable("projectId") Long projectId,@PathVariable("sprintId") Long sprintId){
+        if(projectService.hasSprintStarted(projectId))
+            throw new DataAlreadyExists("Project has sprint already started");
+
+        if(projectService.getSprintById(sprintId)==null)
+            throw new DataNotFound("This sprint not exists in this project");
+
+        Sprint sp = projectService.getSprintById(sprintId);
+
+        sp.setStarted(true);
+
+        projectService.addSprint(sp);
+
+
+        return new ResponseEntity<>("Sprint has been started successfully",HttpStatus.OK);
+    }
+
+
+    @PostMapping("/{projectId}/sprint/{sprintId}/complete/{toSprint}")
+    public ResponseEntity<Object> completeSprint(@PathVariable("projectId") Long projectId,
+                                                 @PathVariable("sprintId") Long sprintId,
+                                                 @PathVariable("toSprint") Long toSprint){
+        Sprint sp = projectService.getSprintByIdAndProjectId(sprintId,projectId);
+        sp.setComplete(true);
+        sp.setStarted(false);
+
+        List<Task> spTasks = sp.getTasks();
+
+        //each task has not done yet -> to the backlog
+        spTasks.forEach(t->{
+            if(!t.getStatus().equals(Status.DONE) && !t.getStatus().equals(Status.COMPLETE)){
+                t.setSprint(projectService.getSprintById(toSprint));
+                projectService.addTask(t);
+            }
+
+            if(t.getStatus().equals(Status.DONE)){
+                t.setStatus(Status.COMPLETE);
+                projectService.addTask(t);
+            }
+        });
+
+        projectService.addSprint(sp);
+
+        return new ResponseEntity<>("Sprint complete successfully",HttpStatus.OK);
+
+    }
 
     //Get Project Sprint and Task -> for backlog page
     @GetMapping("/{projectId}/sprints_tasks")
@@ -271,8 +340,6 @@ ProjectController {
 
             projectService.addTask(task);
 
-
-
         }
 
         return new ResponseEntity<>(task,HttpStatus.CREATED);
@@ -335,10 +402,10 @@ ProjectController {
 
 
 
-    @PostMapping("/sendHistoryNotification")
+    /*@PostMapping("/sendHistoryNotification")
     public ResponseEntity<Object> sendHistoryToNotificationService(@RequestBody KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
         return new ResponseEntity<>(projectService.send(kafkaReportDTO),HttpStatus.OK);
     }
-
+    */
 
 }

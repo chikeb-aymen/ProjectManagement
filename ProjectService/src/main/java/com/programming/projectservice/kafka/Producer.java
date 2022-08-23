@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 
 @Slf4j
-@Component
+//@Component
 public class Producer {
 
     @Value("${topic.name}")

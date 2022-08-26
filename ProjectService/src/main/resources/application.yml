@@ -13,6 +13,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/pm_project
     username: postgres
     password: aymen
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 70MB
+      max-request-size: 70MB
+
 
 eureka:
   client:

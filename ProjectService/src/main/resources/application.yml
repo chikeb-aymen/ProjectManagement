@@ -13,6 +13,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/pm_project
     username: postgres
     password: aymen
+  #for upload file to s3 aws
   servlet:
     multipart:
       enabled: true
@@ -29,3 +30,4 @@ eureka:
 
 topic:
   name: report
+  assigne: assigneTask

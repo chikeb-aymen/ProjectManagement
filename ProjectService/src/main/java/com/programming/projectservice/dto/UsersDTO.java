@@ -29,6 +29,8 @@ public class UsersDTO {
 
     private boolean isAvatarSet;
 
+    private Integer phoneNumber;
+
 
 
 }

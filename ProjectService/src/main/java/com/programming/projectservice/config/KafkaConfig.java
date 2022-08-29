@@ -12,7 +12,7 @@ import org.springframework.kafka.core.ProducerFactory;
 
 import java.util.Map;
 
-//@Configuration
+@Configuration
 public class KafkaConfig {
 
     private final KafkaProperties kafkaProperties;
@@ -38,6 +38,15 @@ public class KafkaConfig {
     public NewTopic topic() {
         return TopicBuilder
                 .name("report")
+                .partitions(1)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic assigneTaskTopic() {
+        return TopicBuilder
+                .name("assigneTask")
                 .partitions(1)
                 .replicas(1)
                 .build();

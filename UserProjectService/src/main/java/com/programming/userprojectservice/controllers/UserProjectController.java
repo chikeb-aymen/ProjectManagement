@@ -23,7 +23,7 @@ public class UserProjectController {
         return userProjectService.findUsersByProjectId(id);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user/{userId}/projects")
     public List<UserProject> getProjectsByUser(@PathVariable("userId") Long id){
         return userProjectService.findProjectsByUserId(id);
     }

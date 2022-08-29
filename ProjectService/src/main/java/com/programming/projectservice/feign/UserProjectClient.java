@@ -14,4 +14,10 @@ public interface UserProjectClient {
 
     @GetMapping(value = "/api/v1/user-project/project/{projectId}")
     List<UserProjectDTO> getUsersByProject(@PathVariable("projectId") Long id);
+
+
+    @GetMapping(value = "/api/v1/user-project/user/{userId}/projects")
+    List<UserProjectDTO> getUserProjects(@PathVariable("userId") Long id);
+
+
 }

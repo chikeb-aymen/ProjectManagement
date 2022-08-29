@@ -43,6 +43,8 @@ public class Users {
     @Column(columnDefinition = "boolean default false")
     private boolean isAvatarSet;
 
+    private Integer phoneNumber;
+
 
     public Users(String firstName, String lastName, String username, String email, String password) {
         this.firstName = firstName;

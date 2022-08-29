@@ -27,6 +27,10 @@ public class Report {
 
     private String userId;
 
+    private String projectName;
+
+    private Integer phoneNumber;
+
     private String userEmail;
 
     private String userAvatar;

@@ -27,7 +27,7 @@ public class ProjectService {
 
     private TaskRepository taskRepository;
 
-    //private Producer producer;
+    private Producer producer;
 
 
     public Project findProjectById(Long id){
@@ -146,9 +146,13 @@ public class ProjectService {
 
 
     //Send History to notification service
-    /*public String send(KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
+    public String send(KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
         return producer.sendMessage(kafkaReportDTO);
-    }*/
+    }
+
+    public String sendAssigne(KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
+        return producer.sendAssigneToMessage(kafkaReportDTO);
+    }
 
 
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.programming.projectservice.dto.KafkaReportDTO;
 import com.programming.projectservice.dto.UserProjectDTO;
 import com.programming.projectservice.dto.UsersDTO;
+import com.programming.projectservice.entities.Project;
 import com.programming.projectservice.entities.Sprint;
 import com.programming.projectservice.entities.Task;
 import com.programming.projectservice.enums.Priority;
@@ -67,6 +68,26 @@ public class ProjectController {
 
         return new ResponseEntity<>(projectUsers, HttpStatus.OK);
     }
+
+
+    @GetMapping("/user/{userId}/projects")
+    public ResponseEntity<Object> listProjectsByUser(@PathVariable("userId") Long userId){
+        List<UserProjectDTO> projectUsersId = userProjectClient.getUsersByProject(userId);
+
+        if(projectUsersId.size()<=0){
+            throw new DataNotFound("There are no project for you");
+        }
+
+        List<Project> projects = new ArrayList<>();
+
+        for (UserProjectDTO pu:projectUsersId) {
+            projects.add(projectService.findProjectById(pu.getProjectId()));
+        }
+
+        return new ResponseEntity<>(projects, HttpStatus.OK);
+    }
+
+
 
 
 
@@ -362,13 +383,31 @@ public class ProjectController {
 
 
     @PostMapping("/task/{taskId}/update")
-    public ResponseEntity<Object> updateTask(@PathVariable("taskId") Long taskId,@RequestBody TaskMapper ts){
+    public ResponseEntity<Object> updateTask(@PathVariable("taskId") Long taskId,@RequestBody TaskMapper ts) throws JsonProcessingException {
 
         Task task = projectService.getTaskById(taskId);
 
         if(task==null){
             throw new DataNotFound("Task not found");
         }
+
+
+        if(!Objects.equals(task.getAssigneTo(), ts.getAssigneTo()) && ts.getAssigneTo()!=null){
+            //send message
+            UsersDTO user = usersClient.getUserDetails(ts.getAssigneTo());
+            KafkaReportDTO kafkaReportDTO = new KafkaReportDTO();
+            kafkaReportDTO.setProjectId(String.valueOf(task.getSprint().getProject().getId()));
+            kafkaReportDTO.setProjectName(task.getSprint().getProject().getName());
+            kafkaReportDTO.setEvent("Assigne To");
+            kafkaReportDTO.setUserId(String.valueOf(user.getId()));
+            kafkaReportDTO.setUserEmail(user.getEmail());
+            kafkaReportDTO.setUserAvatar(user.getAvatar());
+            kafkaReportDTO.setDescription("Task has been assigne to "+user.getUsername());
+            kafkaReportDTO.setPhoneNumber(user.getPhoneNumber());
+            projectService.sendAssigne(kafkaReportDTO);
+        }
+
+
 
         if(ts.getName()!=null)
             task.setName(ts.getName());
@@ -394,6 +433,9 @@ public class ProjectController {
             task.setPriority(null);
         else
             task.setPriority(Priority.valueOf(ts.getPriority()));
+
+
+
 
         projectService.addTask(task);
 

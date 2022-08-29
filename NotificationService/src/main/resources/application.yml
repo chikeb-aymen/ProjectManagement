@@ -17,3 +17,4 @@ spring:
 
 topic:
   name: report
+  assigne: assigneTask

@@ -46,6 +46,13 @@
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>8.35.0</version>
+        </dependency>
+
+
     </dependencies>
 
     <dependencyManagement>

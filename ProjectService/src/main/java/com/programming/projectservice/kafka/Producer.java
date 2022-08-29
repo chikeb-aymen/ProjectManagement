@@ -11,11 +11,14 @@ import org.springframework.stereotype.Component;
 
 
 @Slf4j
-//@Component
+@Component
 public class Producer {
 
     @Value("${topic.name}")
     private String reportTopic;
+
+    @Value("${topic.assigne}")
+    private String assigneTopic;
 
     private final ObjectMapper objectMapper;
 
@@ -30,6 +33,16 @@ public class Producer {
         String objectAsString = objectMapper.writeValueAsString(report);
 
         kafkaTemplate.send(reportTopic,objectAsString);
+
+        log.info("Task produced {}", objectAsString);
+
+        return "Message sent Successfully";
+    }
+
+    public String sendAssigneToMessage(KafkaReportDTO report) throws JsonProcessingException {
+        String objectAsString = objectMapper.writeValueAsString(report);
+
+        kafkaTemplate.send(assigneTopic,objectAsString);
 
         log.info("Task produced {}", objectAsString);
 

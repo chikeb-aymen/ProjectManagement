@@ -23,4 +23,11 @@ public class UsersService {
 
     }
 
+    public Users getUserByEmail(String email){
+        if(usersRepository.findUsersByEmail(email)==null)
+            throw new DataNotFound("User with email -"+email+"- not found");
+
+        return usersRepository.findUsersByEmail(email);
+    }
+
 }

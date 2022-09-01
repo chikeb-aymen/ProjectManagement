@@ -2,10 +2,7 @@ package com.programming.projectservice.feign;
 
 import com.programming.projectservice.dto.UserProjectDTO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,4 +17,11 @@ public interface UserProjectClient {
     List<UserProjectDTO> getUserProjects(@PathVariable("userId") Long id);
 
 
+
+    @GetMapping(value = "/api/v1/user-project/user/{userId}/project/{projectId}")
+    boolean checkIfUserExistProject(@PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId);
+
+
+    @PostMapping(value = "/api/v1/user-project/project/{projectId}/add/user/{userId}")
+    UserProjectDTO addUserToProject(@PathVariable("projectId") Long projectId,@PathVariable("userId") Long userId);
 }

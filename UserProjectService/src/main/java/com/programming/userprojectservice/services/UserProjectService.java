@@ -28,4 +28,24 @@ public class UserProjectService {
         }
         return userProjectRepository.findAllByUserId(userId);
     }
+
+
+    public boolean findUserExistProject(Long projectId, Long userId){
+
+        return userProjectRepository.findByProjectIdAndUserId(projectId, userId) != null;
+    }
+
+    public UserProject addUserToProject(Long projectId,Long userId){
+        if(userProjectRepository.findByProjectIdAndUserId(projectId,userId)!=null){
+            throw new DataNotFoundException("User already exists in this project");
+        }
+
+        UserProject userProject = new UserProject(projectId,userId);
+
+        userProjectRepository.save(userProject);
+
+        return userProject;
+    }
+
+
 }

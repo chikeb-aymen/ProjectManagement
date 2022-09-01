@@ -19,4 +19,8 @@ public class UserProject {
 
     private Long projectId;
 
+    public UserProject(Long projectId,Long userId) {
+        this.userId = userId;
+        this.projectId = projectId;
+    }
 }

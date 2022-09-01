@@ -1,5 +1,6 @@
 package com.programming.projectservice.exceptions;
 
+import feign.FeignException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +38,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         apiException.setSubErrorsList(subErrors);
 
         return new ResponseEntity<>(apiException,HttpStatus.NOT_ACCEPTABLE);
+    }
+
+
+    @ExceptionHandler(FeignException.class)
+    protected ResponseEntity<Object> handleFeignStatusException(FeignException ex, HttpServletResponse response){
+        System.out.println(ex.getMessage());
+        CustomerApiException apiException = new CustomerApiException("User not found in platform", HttpStatus.NOT_FOUND,"I can't show you the Stack Trace 😅");
+        return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({DataNotFound.class})

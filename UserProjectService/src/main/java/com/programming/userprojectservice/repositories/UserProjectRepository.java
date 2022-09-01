@@ -10,4 +10,6 @@ import java.util.List;
 public interface UserProjectRepository extends JpaRepository<UserProject, Long> {
     List<UserProject> findAllByUserId(Long userId);
     List<UserProject> findAllByProjectId(Long projectId);
+
+    UserProject findByProjectIdAndUserId(Long projectId,Long userId);
 }

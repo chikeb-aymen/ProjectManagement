@@ -3,10 +3,8 @@ package com.programming.userprojectservice.controllers;
 import com.programming.userprojectservice.entities.UserProject;
 import com.programming.userprojectservice.services.UserProjectService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +24,16 @@ public class UserProjectController {
     @GetMapping("/user/{userId}/projects")
     public List<UserProject> getProjectsByUser(@PathVariable("userId") Long id){
         return userProjectService.findProjectsByUserId(id);
+    }
+
+    @GetMapping("/user/{userId}/project/{projectId}")
+    public boolean checkIfUserExistProject(@PathVariable("projectId") Long projectId, @PathVariable("userId") Long userid){
+        return userProjectService.findUserExistProject(projectId,userid);
+    }
+
+
+    @PostMapping("/project/{projectId}/add/user/{userId}")
+    public UserProject addUserToProject(@PathVariable("projectId") Long projectId,@PathVariable("userId") Long userid){
+        return  userProjectService.addUserToProject(projectId,userid);
     }
 }

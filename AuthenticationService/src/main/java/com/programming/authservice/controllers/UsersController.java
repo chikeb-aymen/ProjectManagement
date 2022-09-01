@@ -8,8 +8,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.ws.rs.PathParam;
 import java.util.List;
+import java.util.Map;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/v1/users")
 @AllArgsConstructor
@@ -47,5 +50,19 @@ public class UsersController {
     }
 
 
+
+    @GetMapping("/email/details/{email}")
+    public UserDTO getUserDetail(@PathVariable("email") String data){
+
+        System.out.println("Enter to getUserDetail");
+        System.out.println(data);
+        Users user = usersService.getUserByEmail(data);
+
+        System.out.println(user);
+
+        //System.out.println(UserMapper.UsersToUserDTO(user));
+
+        return UserMapper.UsersToUserDTO(user);
+    }
 
 }

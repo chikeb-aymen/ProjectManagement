@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @CrossOrigin("*")
@@ -449,5 +450,28 @@ public class ProjectController {
         return new ResponseEntity<>(projectService.send(kafkaReportDTO),HttpStatus.OK);
     }
     */
+
+
+
+    /*User Api*/
+    @PostMapping("/{projectId}/add/people")
+    public ResponseEntity<Object> addPeopleToProject(@PathVariable("projectId") Long projectId,@RequestBody Map<String,String> data){
+        //Check if email exists in platform
+        UsersDTO usersDTO = usersClient.getUserByEmail(data.get("email"));
+
+        System.out.println(usersDTO);
+        //If User already exist in this project
+        if(userProjectClient.checkIfUserExistProject(projectId,usersDTO.getId()))
+            throw new DataAlreadyExists("User already exists in this project");
+
+
+        //If Exist send email to user
+
+        //TODO send mail to user
+        //Add user to project
+        userProjectClient.addUserToProject(projectId,usersDTO.getId());
+
+        return new ResponseEntity<>(usersDTO,HttpStatus.CREATED);
+    }
 
 }

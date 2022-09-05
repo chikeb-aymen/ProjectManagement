@@ -3,6 +3,7 @@ package com.programming.authservice.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -36,7 +37,6 @@ public class Users {
 
     @Size(min = 8,message = "Password must be at least 8 characters")
     private String password;
-
 
     private String avatar;
 

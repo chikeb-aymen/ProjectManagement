@@ -73,7 +73,7 @@ public class ProjectController {
 
     @GetMapping("/user/{userId}/projects")
     public ResponseEntity<Object> listProjectsByUser(@PathVariable("userId") Long userId){
-        List<UserProjectDTO> projectUsersId = userProjectClient.getUsersByProject(userId);
+        List<UserProjectDTO> projectUsersId = userProjectClient.getUserProjects(userId);
 
         if(projectUsersId.size()<=0){
             throw new DataNotFound("There are no project for you");
@@ -89,6 +89,11 @@ public class ProjectController {
     }
 
 
+
+    @GetMapping("/{projectId}")
+    public ResponseEntity<Object> getProjectById(@PathVariable("projectId") Long projectId){
+        return new ResponseEntity<>(projectService.findProjectById(projectId),HttpStatus.OK);
+    }
 
 
 
@@ -264,7 +269,6 @@ public class ProjectController {
 
         return new ResponseEntity<>(task,HttpStatus.ACCEPTED);
     }
-
 
 
 
@@ -445,7 +449,8 @@ public class ProjectController {
 
 
 
-    /*@PostMapping("/sendHistoryNotification")
+    /*
+    @PostMapping("/sendHistoryNotification")
     public ResponseEntity<Object> sendHistoryToNotificationService(@RequestBody KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
         return new ResponseEntity<>(projectService.send(kafkaReportDTO),HttpStatus.OK);
     }

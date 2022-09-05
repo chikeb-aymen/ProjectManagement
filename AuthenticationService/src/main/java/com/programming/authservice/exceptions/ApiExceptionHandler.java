@@ -15,4 +15,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler({DataAlreadyExists.class})
+    public ResponseEntity<Object> handlerDataExists(DataAlreadyExists e){
+        CustomerApiException apiException = new CustomerApiException(e.getMessage(), HttpStatus.FOUND,"I can't show you the Stack Trace 😅");
+
+        return new ResponseEntity<>(apiException,HttpStatus.FOUND);
+    }
 }

@@ -14,3 +14,11 @@ spring:
     username: postgres
     password: aymen
     url: jdbc:postgresql://localhost:5432/pm_authentication
+
+keycloak:
+  realm: project-management
+  resource: authentication-service
+  auth-server-url: http://localhost:8089/auth
+  public-client: true
+  credentials:
+    secret: 0692e91c-5dc5-4018-9bbe-008ce5bfaaac

@@ -1,14 +1,23 @@
 package com.programming.authservice.controllers;
 
+import com.programming.authservice.dtos.KeycloakUserRequest;
 import com.programming.authservice.dtos.UserDTO;
 import com.programming.authservice.entities.Users;
+import com.programming.authservice.exceptions.DataAlreadyExists;
 import com.programming.authservice.mappers.UserMapper;
+import com.programming.authservice.services.KeycloakService;
 import com.programming.authservice.services.UsersService;
 import lombok.AllArgsConstructor;
+import org.keycloak.adapters.springsecurity.client.KeycloakRestTemplate;
+import org.keycloak.admin.client.CreatedResponseUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 
@@ -21,12 +30,31 @@ public class UsersController {
     private UsersService usersService;
 
 
-    @PostMapping("/register")
-    public String register(@Valid @RequestBody Users users){
-        return "Register";
+    private KeycloakService keycloakService;
+
+    @PostMapping("/auth/keycloak/register")
+    public ResponseEntity<Object> register(@RequestBody Users userRequest){
+        System.out.println("REGISTER");
+        Response response = keycloakService.addKeycloakUser(userRequest);
+        String userId = CreatedResponseUtil.getCreatedId(response);
+        //assigne user role
+
+        keycloakService.assigneRoleToUser(userId,keycloakService.findRoleByName("USER"));
+
+        if(response.getStatus() != 201)
+            throw new DataAlreadyExists("User was not created");
+
+        return new ResponseEntity<>(userRequest, HttpStatus.CREATED);
+
+    }
+
+    @GetMapping("/auth/login")
+    public String login(){
+        return "Login";
     }
 
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     public Users userDetails(@PathVariable("id") Long userId){
         return usersService.getUserDetail(userId);
@@ -38,6 +66,7 @@ public class UsersController {
      * @param userId
      * @return
      */
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/details/{userId}")
     public UserDTO getUserDetail(@PathVariable("userId") Long userId){
         System.out.println("----USER ID-----"+userId);
@@ -51,6 +80,7 @@ public class UsersController {
 
 
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/email/details/{email}")
     public UserDTO getUserDetail(@PathVariable("email") String data){
 
@@ -64,5 +94,7 @@ public class UsersController {
 
         return UserMapper.UsersToUserDTO(user);
     }
+
+
 
 }

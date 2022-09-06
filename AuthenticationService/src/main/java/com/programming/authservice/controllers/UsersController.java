@@ -10,6 +10,7 @@ import com.programming.authservice.services.UsersService;
 import lombok.AllArgsConstructor;
 import org.keycloak.adapters.springsecurity.client.KeycloakRestTemplate;
 import org.keycloak.admin.client.CreatedResponseUtil;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,13 +49,13 @@ public class UsersController {
 
     }
 
-    @GetMapping("/auth/login")
-    public String login(){
-        return "Login";
+    @PostMapping("/auth/login")
+    public ResponseEntity<AccessTokenResponse> login(@RequestBody KeycloakUserRequest userRequest){
+        return keycloakService.login(userRequest.getUsername(),userRequest.getPassword());
     }
 
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','PROJECT_MANAGEMENT')")
     @GetMapping("/{id}")
     public Users userDetails(@PathVariable("id") Long userId){
         return usersService.getUserDetail(userId);
@@ -66,7 +67,7 @@ public class UsersController {
      * @param userId
      * @return
      */
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','PROJECT_MANAGEMENT')")
     @GetMapping("/details/{userId}")
     public UserDTO getUserDetail(@PathVariable("userId") Long userId){
         System.out.println("----USER ID-----"+userId);
@@ -80,7 +81,7 @@ public class UsersController {
 
 
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','PROJECT_MANAGEMENT')")
     @GetMapping("/email/details/{email}")
     public UserDTO getUserDetail(@PathVariable("email") String data){
 

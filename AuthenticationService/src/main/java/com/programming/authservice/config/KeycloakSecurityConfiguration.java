@@ -9,6 +9,7 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -35,9 +36,11 @@ public class KeycloakSecurityConfiguration extends KeycloakWebSecurityConfigurer
         http
             .csrf().disable()
             .authorizeRequests()
-            .anyRequest().permitAll();
-            //.antMatchers("/api/v1/users/auth/register","/api/v1/users/auth/login").permitAll();
-            //.antMatchers("/api/v1/users/**").authenticated();
+            .antMatchers("/api/v1/users/auth/register","/api/v1/users/auth/login").permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
 

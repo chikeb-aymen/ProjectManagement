@@ -1,21 +1,20 @@
 package com.programming.authservice.services;
 
-import com.programming.authservice.dtos.KeycloakUserRequest;
+import com.programming.authservice.config.KeycloakClientConfig;
 import com.programming.authservice.entities.Users;
 import com.programming.authservice.exceptions.DataAlreadyExists;
 import lombok.AllArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -23,6 +22,8 @@ import java.util.List;
 public class KeycloakService {
 
     private Keycloak keycloak;
+
+    private final KeycloakClientConfig keycloakClientConfig;
 
     private UsersService usersService;
 
@@ -78,6 +79,24 @@ public class KeycloakService {
                 .roles()
                 .realmLevel()
                 .add(List.of(roleRepresentation));
+
+    }
+
+
+    public ResponseEntity<AccessTokenResponse> login(String username,String password){
+
+        Keycloak keyProvider = keycloakClientConfig.newKeycloakBuilderWithPasswordCredentials(username,password).build();
+        AccessTokenResponse accessTokenResponse = null;
+        try {
+            accessTokenResponse = keyProvider.tokenManager().getAccessToken();
+            return ResponseEntity.status(HttpStatus.OK).body(accessTokenResponse);
+
+        }catch (BadRequestException e){
+
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(accessTokenResponse);
+
+        }
+
     }
 
 

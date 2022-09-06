@@ -22,3 +22,4 @@ keycloak:
   public-client: true
   credentials:
     secret: 0692e91c-5dc5-4018-9bbe-008ce5bfaaac
+  bearer-only: true

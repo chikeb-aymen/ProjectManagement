@@ -37,4 +37,14 @@ public class KeycloakClientConfig {
                                 .connectionPoolSize(10).build())
                 .build();
     }
+
+    public KeycloakBuilder newKeycloakBuilderWithPasswordCredentials(String username,String password){
+        return KeycloakBuilder.builder()
+                .serverUrl(authUrl)
+                .realm(realm)
+                .clientId(clientId)
+                .clientSecret(secretKey)
+                .username(username)
+                .password(password);
+    }
 }

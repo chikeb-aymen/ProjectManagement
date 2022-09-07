@@ -17,7 +17,6 @@ import com.programming.projectservice.feign.UserProjectClient;
 import com.programming.projectservice.feign.UsersClient;
 import com.programming.projectservice.mappers.*;
 import com.programming.projectservice.services.ProjectService;
-import feign.ResponseMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +53,7 @@ public class ProjectController {
 
 
     @GetMapping("/{projectId}/users")
-    public ResponseEntity<Object> listUsersByProject(@PathVariable("projectId") Long projectId){
+    public ResponseEntity<Object> listUsersByProject(@PathVariable("projectId") Long projectId,@RequestHeader("Authorization") String authorization){
         List<UserProjectDTO> projectUsersId = userProjectClient.getUsersByProject(projectId);
 
         if(projectUsersId.size()<=0){
@@ -64,7 +63,7 @@ public class ProjectController {
         List<UsersDTO> projectUsers = new ArrayList<>();
 
         for (UserProjectDTO pu:projectUsersId) {
-            projectUsers.add(usersClient.getUserDetails(pu.getUserId()));
+            projectUsers.add(usersClient.getUserDetails(pu.getUserId(),authorization));
         }
 
         return new ResponseEntity<>(projectUsers, HttpStatus.OK);
@@ -388,7 +387,7 @@ public class ProjectController {
 
 
     @PostMapping("/task/{taskId}/update")
-    public ResponseEntity<Object> updateTask(@PathVariable("taskId") Long taskId,@RequestBody TaskMapper ts) throws JsonProcessingException {
+    public ResponseEntity<Object> updateTask(@PathVariable("taskId") Long taskId,@RequestBody TaskMapper ts,@RequestHeader("Authorization") String authorization) throws JsonProcessingException {
 
         Task task = projectService.getTaskById(taskId);
 
@@ -399,7 +398,7 @@ public class ProjectController {
 
         if(!Objects.equals(task.getAssigneTo(), ts.getAssigneTo()) && ts.getAssigneTo()!=null){
             //send message
-            UsersDTO user = usersClient.getUserDetails(ts.getAssigneTo());
+            UsersDTO user = usersClient.getUserDetails(ts.getAssigneTo(),authorization);
             KafkaReportDTO kafkaReportDTO = new KafkaReportDTO();
             kafkaReportDTO.setProjectId(String.valueOf(task.getSprint().getProject().getId()));
             kafkaReportDTO.setProjectName(task.getSprint().getProject().getName());
@@ -460,9 +459,9 @@ public class ProjectController {
 
     /*User Api*/
     @PostMapping("/{projectId}/add/people")
-    public ResponseEntity<Object> addPeopleToProject(@PathVariable("projectId") Long projectId,@RequestBody Map<String,String> data){
+    public ResponseEntity<Object> addPeopleToProject(@PathVariable("projectId") Long projectId,@RequestBody Map<String,String> data,@RequestHeader("Authorization") String authorization){
         //Check if email exists in platform
-        UsersDTO usersDTO = usersClient.getUserByEmail(data.get("email"));
+        UsersDTO usersDTO = usersClient.getUserByEmail(data.get("email"),authorization.substring(7));
 
         System.out.println(usersDTO);
         //If User already exist in this project

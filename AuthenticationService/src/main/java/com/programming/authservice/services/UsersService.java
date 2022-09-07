@@ -33,6 +33,13 @@ public class UsersService {
         return usersRepository.findUsersByEmail(email);
     }
 
+    public Users getUserByUsername(String username){
+        if(usersRepository.findUsersByUsername(username)==null)
+            throw new DataNotFound("User with username -"+username+"- not found");
+
+        return usersRepository.findUsersByUsername(username);
+    }
+
 
     public void addUser(Users user){
         if(usersRepository.findUsersByEmail(user.getEmail())!=null){

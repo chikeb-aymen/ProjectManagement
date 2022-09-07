@@ -135,7 +135,7 @@ public class ProjectStatisticsController {
 
     //Get People Task [username, {done:1,to do: 1,....}]
     @GetMapping("/userTaskStatus/percentage")
-    public ResponseEntity<Object> getPercentagePeopleTask(@PathVariable("projectId") Long projectId){
+    public ResponseEntity<Object> getPercentagePeopleTask(@PathVariable("projectId") Long projectId,@RequestHeader("Authorization") String authorization){
 
         List<UserProjectDTO> projectUsersId = userProjectClient.getUsersByProject(projectId);
 
@@ -146,7 +146,7 @@ public class ProjectStatisticsController {
         List<UsersDTO> projectUsers = new ArrayList<>();
 
         for (UserProjectDTO pu:projectUsersId) {
-            projectUsers.add(usersClient.getUserDetails(pu.getUserId()));
+            projectUsers.add(usersClient.getUserDetails(pu.getUserId(),authorization));
         }
 
         List<UserTaskStatus> userTaskStatusList = new ArrayList<>();

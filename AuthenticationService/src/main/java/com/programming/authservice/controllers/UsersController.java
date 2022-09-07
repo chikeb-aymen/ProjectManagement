@@ -55,9 +55,9 @@ public class UsersController {
     }
 
 
-    @PreAuthorize("hasAnyRole('USER','ADMIN','PROJECT_MANAGEMENT')")
     @GetMapping("/{id}")
-    public Users userDetails(@PathVariable("id") Long userId){
+    public Users userDetails(@PathVariable("id") Long userId,@RequestHeader("Authorization") String authorization){
+        System.out.println("ENTER TO USER DETAILS /ID");
         return usersService.getUserDetail(userId);
     }
 
@@ -67,7 +67,6 @@ public class UsersController {
      * @param userId
      * @return
      */
-    @PreAuthorize("hasAnyRole('USER','ADMIN','PROJECT_MANAGEMENT')")
     @GetMapping("/details/{userId}")
     public UserDTO getUserDetail(@PathVariable("userId") Long userId){
         System.out.println("----USER ID-----"+userId);
@@ -81,7 +80,6 @@ public class UsersController {
 
 
 
-    @PreAuthorize("hasAnyRole('USER','ADMIN','PROJECT_MANAGEMENT')")
     @GetMapping("/email/details/{email}")
     public UserDTO getUserDetail(@PathVariable("email") String data){
 

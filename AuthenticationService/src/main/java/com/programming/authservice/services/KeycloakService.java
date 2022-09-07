@@ -87,8 +87,15 @@ public class KeycloakService {
 
         Keycloak keyProvider = keycloakClientConfig.newKeycloakBuilderWithPasswordCredentials(username,password).build();
         AccessTokenResponse accessTokenResponse = null;
+
         try {
+
             accessTokenResponse = keyProvider.tokenManager().getAccessToken();
+            if(accessTokenResponse!=null){
+                Users users = usersService.getUserByUsername(username);
+                accessTokenResponse.setOtherClaims("userId",users.getId());
+            }
+
             return ResponseEntity.status(HttpStatus.OK).body(accessTokenResponse);
 
         }catch (BadRequestException e){

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ControllerAdvice
-public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 
 
     @Override
@@ -54,6 +54,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
     }
+
 
     @ExceptionHandler({DataAlreadyExists.class})
     public ResponseEntity<Object> handlerDataExists(DataAlreadyExists e){

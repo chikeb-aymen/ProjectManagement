@@ -71,6 +71,12 @@
         </dependency>
 
 
+        <!--For `java.time.LocalDateTime` in exception-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.13.4</version>
+        </dependency>
 
 
 

@@ -1,7 +1,10 @@
 package com.programming.projectservice.config;
 
+import com.programming.projectservice.exceptions.RestAccessDeniedHandler;
+import com.programming.projectservice.exceptions.RestAuthenticationEntryPoint;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -33,9 +36,21 @@ public class KeycloakSecurityConfiguration extends KeycloakWebSecurityConfigurer
             .authorizeRequests()
             .anyRequest().authenticated()
             .and()
+            .exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(authenticationEntryPoint())
+            .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
+
+    @Bean
+    public RestAuthenticationEntryPoint authenticationEntryPoint() {
+        return new RestAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public RestAccessDeniedHandler accessDeniedHandler() {
+        return new RestAccessDeniedHandler();
+    }
 
 }

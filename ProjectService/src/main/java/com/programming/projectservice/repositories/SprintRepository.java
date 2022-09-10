@@ -11,7 +11,7 @@ public interface SprintRepository extends JpaRepository<Sprint,Long> {
 
     boolean existsByName(String sprintName);
 
-    Sprint findByName(String sp);
+    boolean existsByNameAndProjectId(String sp,Long projectId);
 
     Sprint findByNameAndProjectId(String nm,Long id);
 

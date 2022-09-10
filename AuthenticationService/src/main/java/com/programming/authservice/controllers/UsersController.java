@@ -33,7 +33,7 @@ public class UsersController {
 
     private KeycloakService keycloakService;
 
-    @PostMapping("/auth/keycloak/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<Object> register(@RequestBody Users userRequest){
         System.out.println("REGISTER");
         Response response = keycloakService.addKeycloakUser(userRequest);

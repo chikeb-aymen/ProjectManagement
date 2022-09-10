@@ -44,6 +44,38 @@ public class ProjectController {
     private ProjectService projectService;
 
 
+    @PostMapping("/{userId}/create/{projectName}")
+    public ResponseEntity<Object> createProject(@PathVariable("userId") Long userId,@PathVariable("projectName") String name){
+
+        if(projectService.existsByLeadUserAndName(userId,name))
+            throw new DataAlreadyExists("Project with name -"+name+"- already exists");
+
+
+        Project project = new Project();
+        String projectIcon = "https://avatars.dicebear.com/api/identicon/"+Math.random()+".svg";
+        project.setName(name);
+        project.setLeadUser(userId);
+        project.setIcon(projectIcon);
+        project.setType("Project Management");
+
+        Project pr = projectService.saveProject(project);
+
+
+
+        //add user to project users
+        if(userProjectClient.addUserToProject(pr.getId(),userId)==null){
+            throw new DataAlreadyExists("Cannot add user to this project");
+        };
+
+        //add backlog sprint
+        projectService.addSprint(new Sprint("Backlog",pr));
+
+
+
+        return new ResponseEntity<>(project,HttpStatus.CREATED);
+
+    }
+
     @GetMapping("/task/{taskId}")
     public ResponseEntity<Object> getTaskById(@PathVariable("taskId") Long taskId){
         Task task = projectService.getTaskById(taskId);

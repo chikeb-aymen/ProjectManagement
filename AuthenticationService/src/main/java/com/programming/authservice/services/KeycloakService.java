@@ -34,6 +34,7 @@ public class KeycloakService {
 
 
         try{
+            userRequest.setAvatar("https://avatars.dicebear.com/api/initials/"+userRequest.getFirstName()+" "+userRequest.getLastName()+".svg");
             usersService.addUser(userRequest);
         }catch (Exception e){
             throw new DataAlreadyExists("User already exists");

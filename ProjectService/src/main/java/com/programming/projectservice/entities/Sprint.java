@@ -47,7 +47,8 @@ public class Sprint {
     private List<Task> tasks;
 
 
-
-
-
+    public Sprint(String name, Project project) {
+        this.name = name;
+        this.project = project;
+    }
 }

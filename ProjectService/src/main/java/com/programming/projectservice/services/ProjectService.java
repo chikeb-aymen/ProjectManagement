@@ -30,6 +30,27 @@ public class ProjectService {
     private Producer producer;
 
 
+    /**
+     * Check if user has a project with name
+     * @param userId
+     * @param name
+     * @return
+     */
+    public boolean existsByLeadUserAndName(Long userId,String name){
+        return projectRepository.existsByLeadUserAndName(userId,name);
+    }
+
+    /**
+     * Save PROJECT
+     * @param pr
+     * @return
+     */
+    public Project saveProject(Project pr){
+        return projectRepository.save(pr);
+    }
+
+
+
     public Project findProjectById(Long id){
         if(projectRepository.findById(id).isEmpty())
             throw new DataNotFound("Project with id -"+id+"- not found");
@@ -51,15 +72,13 @@ public class ProjectService {
     }
 
     public boolean checkSprintProject(Long projectId,String sprintName){
-        Sprint sprint = sprintRepository.findByName(sprintName);
-        if(sprint==null){
-            throw new DataNotFound("Sprint not found in this project");
-        }
-        if(!Objects.equals(sprint.getProject().getId(), projectId)){
+
+        if(!sprintRepository.existsByNameAndProjectId(sprintName,projectId)){
             throw new DataNotFound("Sprint not found in this project");
         }
 
         return true;
+
     }
 
 
@@ -135,6 +154,7 @@ public class ProjectService {
 
 
 
+
     @Transactional
     public void addTask(Task t){
         taskRepository.save(t);
@@ -153,6 +173,8 @@ public class ProjectService {
     public String sendAssigne(KafkaReportDTO kafkaReportDTO) throws JsonProcessingException {
         return producer.sendAssigneToMessage(kafkaReportDTO);
     }
+
+
 
 
 }

@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
@@ -46,13 +47,13 @@ public class KeycloakSecurityConfiguration extends KeycloakWebSecurityConfigurer
     }
 
 
-    @Bean
-    public RestAuthenticationEntryPoint authenticationEntryPoint() {
+    //@Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
         return new RestAuthenticationEntryPoint();
     }
 
-    @Bean
-    public RestAccessDeniedHandler accessDeniedHandler() {
+    //@Bean
+    public AccessDeniedHandler accessDeniedHandler() {
         return new RestAccessDeniedHandler();
     }
 }

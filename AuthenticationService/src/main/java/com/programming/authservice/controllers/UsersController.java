@@ -56,7 +56,7 @@ public class UsersController {
 
 
     @GetMapping("/{id}")
-    public Users userDetails(@PathVariable("id") Long userId,@RequestHeader("Authorization") String authorization){
+    public Users userDetails(@PathVariable("id") Long userId){
         System.out.println("ENTER TO USER DETAILS /ID");
         return usersService.getUserDetail(userId);
     }

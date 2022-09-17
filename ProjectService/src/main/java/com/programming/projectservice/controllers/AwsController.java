@@ -4,6 +4,9 @@ package com.programming.projectservice.controllers;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.model.*;
+import com.amazonaws.services.ecs.AmazonECS;
+import com.amazonaws.services.ecs.model.RunTaskRequest;
+import com.amazonaws.services.ecs.model.StartTaskRequest;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
@@ -46,6 +49,9 @@ public class AwsController {
 
 
     private AmazonEC2 ec2Client;
+
+
+    private AmazonECS amazonECS;
 
 
 
@@ -149,6 +155,23 @@ public class AwsController {
 
 
 
+    /*
+    public String deployDocker(String s3JarUrl,String s3FileName) throws InterruptedException {
+        RunTaskRequest runTaskRequest = new RunTaskRequest();
+        runTaskRequest.setLaunchType("FARGATE");
+        runTaskRequest.setCluster("project-management");
+        runTaskRequest.setTaskDefinition("new-task");
+        runTaskRequest.setCount(1);
+
+        StartTaskRequest startTaskRequest = new StartTaskRequest();
+        startTaskRequest.setContainerInstances();
+
+        amazonECS.startTask()
+
+    }
+
+
+     */
    /* @GetMapping("/ec2/create")
     public String createEc2(String s3JarUrl){
         RunInstancesRequest runInstancesRequest = RunInstancesRequest.builder()

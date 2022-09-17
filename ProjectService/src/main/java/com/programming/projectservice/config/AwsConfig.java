@@ -4,6 +4,8 @@ import com.amazonaws.auth.*;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
+import com.amazonaws.services.ecs.AmazonECS;
+import com.amazonaws.services.ecs.AmazonECSClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.springframework.context.annotation.Bean;
@@ -48,5 +50,13 @@ public class AwsConfig {
                 .withRegion(region).build();
     }
 
+    @Bean
+    public AmazonECS amazonECS(){
+        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyID,secretAccessKey);
+
+        return AmazonECSClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                .withRegion(region).build();
+    }
 
 }

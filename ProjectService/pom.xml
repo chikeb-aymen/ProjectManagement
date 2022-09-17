@@ -73,6 +73,13 @@
             <version>1.12.286</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-ecs</artifactId>
+            <version>1.12.304</version>
+        </dependency>
+
+
         <!--Security-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -91,6 +98,8 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>2.13.4</version>
         </dependency>
+
+
 
     </dependencies>
 

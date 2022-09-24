@@ -36,7 +36,7 @@ public class KeycloakSecurityConfiguration extends KeycloakWebSecurityConfigurer
         http.cors()
             .and()
             .csrf().disable()
-            .authorizeRequests()
+            .antMatcher("/api/v1/aws/*").authorizeRequests()
             .anyRequest().authenticated()
             .and()
             .exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(authenticationEntryPoint())
